@@ -15,11 +15,40 @@ class Student(BaseModel):
     year: str
 
 
+class UpdateStudent(BaseModel):
+    name: Optional[str] = None
+    age: Optional[int] = None
+    year: Optional[str] = None
+
+
+
 @app.post("/create-student/{student_id}")
 def create_student(student_id: int, student: Student):
     if student_id in students:
         return {"Error": "Student already exists"}
     students[student_id] = student
+    return students[student_id]
+
+
+@app.put("/update-student/{student_id}")
+def update_student(student_id: int, student: UpdateStudent):
+    if student_id not in students:
+        return {"Error": "Student does not exist"}
+    
+    # Convert existing student data to dict if it's a Pydantic model
+    if not isinstance(students[student_id], dict):
+        students[student_id] = students[student_id].model_dump()
+    
+    data = students[student_id]
+
+    if student.name != None:
+        data["name"] = student.name
+    if student.age != None:
+        data["age"] = student.age
+    if student.year != None:
+        data["year"] = student.year
+    
+    students[student_id] = data
     return students[student_id]
 
 
