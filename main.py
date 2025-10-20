@@ -19,11 +19,13 @@ def get_student(student_id: int = Path(..., description="The ID of student", gt=
     return students.get(student_id, {"error": "Student not found"})
 
 
-@app.get('/get-by-name')
-def get_student_by_name(student_name: Optional[str] = Query(None, min_length=3, max_length=50)):
-    for student_id in students:
-        if students[student_id]["name"] == student_name:
-            return students[student_id] 
+@app.get('/get-by-name/{student_id}')
+def get_student_by_name(*, student_id:int, student_name: Optional[str] = Query(None, min_length=3, max_length=50)):
+    # for student_id in students:
+    #     if students[student_id]["name"] == student_name:
+    #         return students[student_id] 
+    if student_id in students and students[student_id]["name"] == student_name:
+        return students[student_id]
     return {"error": "Student not found"}
 
 
